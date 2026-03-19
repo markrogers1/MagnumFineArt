@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Magnum Fine Art | Porsche Collection</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: black;
+      overflow: hidden;
+    }
+
+    h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 48px;
+    }
+
+    p {
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-size: 12px;
+      margin-top: 10px;
+    }
+
+    /* LOADER */
+    .loader {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      background: black;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Playfair Display', serif;
+      z-index: 999;
+      transition: opacity 1s ease;
+    }
+
+    .loader.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* NAV */
+    .nav {
+      position: absolute;
+      width: 100%;
+      padding: 30px 60px;
+      display: flex;
+      justify-content: space-between;
+      color: white;
+      z-index: 10;
+    }
+
+    /* SLIDES */
+    .slide {
+      position: absolute;
+      width: 100%;
+      height: 100vh;
+      background-size: cover;
+      background-position: center;
+      opacity: 0;
+      transform: scale(1.1);
+      transition: opacity 1.5s ease, transform 6s ease;
+    }
+
+    .slide.active {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .slide::after {
+      content:"";
+      position:absolute;
+      width:100%;
+      height:100%;
+      background: rgba(0,0,0,0.35);
+    }
+
+    /* OVERLAY */
+    .overlay {
+      position: absolute;
+      bottom: 80px;
+      left: 60px;
+      color: white;
+      z-index: 2;
+    }
+
+    .btn {
+      display:inline-block;
+      margin-top:20px;
+      padding:10px 20px;
+      border:1px solid white;
+      font-size:12px;
+      letter-spacing:1px;
+      text-transform:uppercase;
+      transition:0.3s;
+    }
+
+    .btn:hover {
+      background:white;
+      color:black;
+    }
+
+    /* ARROWS */
+    .arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 30px;
+      color: white;
+      cursor: pointer;
+      z-index: 10;
+      padding: 10px;
+    }
+
+    .left { left: 20px; }
+    .right { right: 20px; }
+
+    /* DOTS */
+    .dots {
+      position:absolute;
+      bottom:40px;
+      width:100%;
+      text-align:center;
+    }
+
+    .dot {
+      display:inline-block;
+      width:8px;
+      height:8px;
+      margin:5px;
+      background:rgba(255,255,255,0.4);
+      border-radius:50%;
+      cursor:pointer;
+    }
+
+    .dot.active { background:white; }
+
+    /* MOBILE */
+    @media(max-width:768px){
+      h1 { font-size:28px; }
+      .overlay { left:20px; bottom:60px; }
+      .nav { padding:20px; }
+    }
+
+  </style>
+</head>
+
+<body>
+
+<!-- LOADER -->
+<div class="loader">MAGNUM FINE ART</div>
+
+<!-- NAV -->
+<div class="nav">
+  <div>MAGNUM FINE ART</div>
+  <div>PORSCHE COLLECTION</div>
+</div>
+
+<!-- ARROWS -->
+<div class="arrow left">&#8592;</div>
+<div class="arrow right">&#8594;</div>
+
+<!-- SLIDES -->
+
+<div class="slide active" style="background-image:url('https://www.magnumfineart.com/cdn/shop/files/911RS_CC15WebRes.jpg?v=1772709728&width=1200')">
+  <div class="overlay">
+    <h1>911RS – Blue</h1>
+    <p>Limited Edition Automotive Artwork</p>
+    <a href="https://www.magnumfineart.com/collections/automotive-limited-edition/products/911rs-blue" target="_blank" class="btn">Enquire</a>
+  </div>
+</div>
+
+<div class="slide" style="background-image:url('https://www.magnumfineart.com/cdn/shop/files/GreenCarerra_PlainBG_Parfum_CC5_HRcopy.jpg?v=1772710193&width=1200')">
+  <div class="overlay">
+    <h1>Porsche 911SC – Green</h1>
+    <p>Limited Edition Automotive Artwork</p>
+    <a href="https://www.magnumfineart.com/collections/automotive-limited-edition/products/porsche-911sc-green" target="_blank" class="btn">Enquire</a>
+  </div>
+</div>
+
+<!-- DOTS -->
+<div class="dots"></div>
+
+<script>
+const slides = document.querySelectorAll('.slide');
+const dotsContainer = document.querySelector('.dots');
+const left = document.querySelector('.left');
+const right = document.querySelector('.right');
+
+let current = 0;
+let interval;
+
+/* CREATE DOTS */
+slides.forEach((_, i) => {
+  const dot = document.createElement('span');
+  dot.classList.add('dot');
+  if(i === 0) dot.classList.add('active');
+  dot.addEventListener('click', () => goToSlide(i));
+  dotsContainer.appendChild(dot);
+});
+
+const dots = document.querySelectorAll('.dot');
+
+function showSlide(index) {
+  slides.forEach((s,i)=>{
+    s.classList.remove('active');
+    dots[i].classList.remove('active');
+  });
+
+  slides[index].classList.add('active');
+  dots[index].classList.add('active');
+}
+
+function nextSlide(){
+  current = (current + 1) % slides.length;
+  showSlide(current);
+}
+
+function prevSlide(){
+  current = (current - 1 + slides.length) % slides.length;
+  showSlide(current);
+}
+
+function goToSlide(i){
+  current = i;
+  showSlide(current);
+  resetInterval();
+}
+
+/* AUTO */
+function startInterval(){
+  interval = setInterval(nextSlide, 5000);
+}
+
+function resetInterval(){
+  clearInterval(interval);
+  startInterval();
+}
+
+right.onclick = () => { nextSlide(); resetInterval(); };
+left.onclick = () => { prevSlide(); resetInterval(); };
+
+/* SWIPE */
+let startX = 0;
+
+document.addEventListener('touchstart', e=>{
+  startX = e.touches[0].clientX;
+});
+
+document.addEventListener('touchend', e=>{
+  let endX = e.changedTouches[0].clientX;
+  if(startX - endX > 50) nextSlide();
+  if(endX - startX > 50) prevSlide();
+  resetInterval();
+});
+
+/* LOADER */
+window.addEventListener('load', ()=>{
+  setTimeout(()=>{
+    document.querySelector('.loader').classList.add('hidden');
+  }, 800);
+});
+
+/* INIT */
+startInterval();
+</script>
+
+</body>
+</html>
